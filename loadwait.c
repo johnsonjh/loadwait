@@ -68,7 +68,7 @@ main(void)
       usable_procs = (unsigned long)available_procs;
 
   target
-    = ((double)((double)usable_procs - 0.9999 ) / (double)usable_procs * 50 );
+    = ( (double)( (double)usable_procs - 0.9999 ) / (double)usable_procs * 50 );
 
   (void)fprintf(stderr, "* CPU configuration: ");
   (void)fprintf(stderr, " %ld configured, ",  configured_procs);
@@ -80,8 +80,9 @@ again:;
 
   if (getloadavg(load, 3) != -1)
     {
-      avg = (((( 0.0001 + load[0] + load[1] + ( load[2] + load[0] / 2 )) / 3 )
-              / (double)usable_procs ) * 100 );
+      avg
+       = ( ( ( ( 0.0001 + load[0] + load[1] + ( load[2] + load[0] / 2 ) ) / 3 )
+                   / (double)usable_procs ) * 100 );
 
       (void)fprintf(stderr,
         "\r* Load factor:  %.1f  (target %.1f),  load average: "
