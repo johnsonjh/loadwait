@@ -29,7 +29,7 @@
 static inline unsigned long
 count_procs(void)
 {
-  long count = 0;
+  unsigned long count = 0;
   cpu_set_t cs;
 
   CPU_ZERO(&cs);
@@ -49,8 +49,8 @@ int
 main(void)
 {
   double load[3], avg, target;
-  int count = 0;
-  long configured_procs, available_procs, usable_procs = 0;
+  unsigned long usable_procs, count = 0;
+  long configured_procs, available_procs = 0;
 
   configured_procs = sysconf(_SC_NPROCESSORS_CONF);
   if (configured_procs < 1)
@@ -65,23 +65,23 @@ main(void)
       usable_procs = 1;
 
   if (available_procs > 32)
-      usable_procs = available_procs;
+      usable_procs = (unsigned long)available_procs;
 
   target
     = ((double)((double)usable_procs - 0.9999 ) / (double)usable_procs * 50 );
 
   (void)fprintf(stderr, "* CPU configuration: ");
-  (void)fprintf(stderr, " %ld configured, ", configured_procs);
+  (void)fprintf(stderr, " %ld configured, ",  configured_procs);
   (void)fprintf(stderr, " %ld operational, ", available_procs);
-  (void)fprintf(stderr, " %ld serviceable\n", usable_procs);
+  (void)fprintf(stderr, " %lu serviceable\n", usable_procs);
 
-#define POLL_TIME 5
+#define POLL_TIME 5L
 again:;
 
   if (getloadavg(load, 3) != -1)
     {
       avg = (((( 0.0001 + load[0] + load[1] + ( load[2] + load[0] / 2 )) / 3 )
-              / usable_procs ) * 100 );
+              / (double)usable_procs ) * 100 );
 
       (void)fprintf(stderr,
         "\r* Load factor:  %.1f  (target %.1f),  load average: "
@@ -98,6 +98,6 @@ again:;
 
   (void)fprintf(stderr,
     "\r\n* Finished!  Reached target load factor after waiting %lu seconds\r\n",
-    (long unsigned)count);
+    count);
   return 0;
 }
